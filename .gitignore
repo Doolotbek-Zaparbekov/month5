@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+
+# Virtual environment
+venv/
+env/
+
+# VSCode
+.vscode/
+
+# Django
+*.sqlite3
+db.sqlite3
+*.pyc
+
+# Migrations
+*/migrations/__pycache__/
+*/migrations/*.py[cod]
+*/migrations/*.py
+
+# Secret settings
+.env
