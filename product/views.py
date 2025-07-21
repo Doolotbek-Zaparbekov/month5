@@ -6,35 +6,36 @@ from .serializers import (
     ProductWithReviewsSerializer
 )
 
-class CategoryListAPIView(generics.ListAPIView):
+class CategoryListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
 
     def get_queryset(self):
         return Category.objects.annotate(products_count=Count('products'))
 
-class CategoryDetailAPIView(generics.RetrieveAPIView):
+class CategoryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = 'id'
 
-class ProductListAPIView(generics.ListAPIView):
+class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-class ProductDetailAPIView(generics.RetrieveAPIView):
+class ProductRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'id'
 
-class ReviewListAPIView(generics.ListAPIView):
+class ReviewListCreateAPIView(generics.ListCreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
-class ReviewDetailAPIView(generics.RetrieveAPIView):
+class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     lookup_field = 'id'
 
+# Уже существующий класс для списка продуктов с отзывами
 class ProductWithReviewsAPIView(generics.ListAPIView):
     queryset = Product.objects.prefetch_related('reviews').all()
     serializer_class = ProductWithReviewsSerializer
