@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth.models import User
+import random
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -26,3 +28,17 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review for {self.product.title}"
+    
+
+def generate_confirmation_code():
+    return ''.join([str(random.randint(0, 9)) for _ in range(6)])
+
+class UserConfirmation(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='confirmation')
+    code = models.CharField(max_length=6)
+    is_confirmed = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = generate_confirmation_code()
+        super().save(*args, **kwargs)
