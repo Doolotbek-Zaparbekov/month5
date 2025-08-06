@@ -1,7 +1,12 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.contrib.auth.models import User
+from django.conf import settings
 import random
+from django.contrib.auth.models import AbstractUser
+
+class CustomUser(AbstractUser):
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=150, unique=True)
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -34,7 +39,7 @@ def generate_confirmation_code():
     return ''.join([str(random.randint(0, 9)) for _ in range(6)])
 
 class UserConfirmation(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='confirmation')
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='confirmation')
     code = models.CharField(max_length=6)
     is_confirmed = models.BooleanField(default=False)
 
