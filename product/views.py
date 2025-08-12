@@ -5,6 +5,7 @@ from .serializers import (
     CategorySerializer, ProductSerializer, ReviewSerializer,
     ProductWithReviewsSerializer
 )
+from common.validators import validate_user_is_adult
 from users.permissions import IsModerator
 
 
@@ -23,6 +24,11 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsModerator]
+
+    def perform_create(self, serializer):
+        validate_user_is_adult(self.request.user)
+        serializer.save(author=self.request.user)
+
 
 class ProductRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
@@ -43,5 +49,4 @@ class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 class ProductWithReviewsAPIView(generics.ListAPIView):
     queryset = Product.objects.prefetch_related('reviews').all()
     serializer_class = ProductWithReviewsSerializer
-
 

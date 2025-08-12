@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from .serializers import RegisterSerializer, LoginSerializer, ConfirmUserSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
 
 class RegisterAPIView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -26,3 +28,7 @@ class ConfirmUserAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"message": "Пользователь успешно подтвержден"})
+    
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

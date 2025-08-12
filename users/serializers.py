@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import UserConfirmation
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 User = get_user_model()
 
 
@@ -86,3 +87,11 @@ class ConfirmUserSerializer(serializers.Serializer):
         user.confirmation.is_confirmed = True
         user.confirmation.save()
         return user
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['birthday'] = user.birthday.strftime('%Y-%m-%d') if user.birthday else None
+        return token
