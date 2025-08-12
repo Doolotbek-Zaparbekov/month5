@@ -1,11 +1,11 @@
-from django.urls import path
+from django.urls import path, include
 from .views import (
     CategoryListCreateAPIView, CategoryRetrieveUpdateDestroyAPIView,
     ProductListCreateAPIView, ProductRetrieveUpdateDestroyAPIView,
     ReviewListCreateAPIView, ReviewRetrieveUpdateDestroyAPIView,
     ProductWithReviewsAPIView
 )
-from .views import RegisterAPIView, LoginAPIView, ConfirmUserAPIView
+
 
 urlpatterns = [
     # Категории
@@ -23,8 +23,7 @@ urlpatterns = [
     # Продукты с отзывами и рейтингом
     path('products/reviews/', ProductWithReviewsAPIView.as_view(), name='product-with-reviews'),
 
-    path('users/register/', RegisterAPIView.as_view(), name='register'),
-    path('users/login/', LoginAPIView.as_view(), name='login'),
-    path('users/confirm/', ConfirmUserAPIView.as_view(), name='confirm'),
+
+    path('api/v1/users/', include('users.urls')),
 
 ]
