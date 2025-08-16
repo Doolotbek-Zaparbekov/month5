@@ -138,3 +138,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+
+GOOGLE_CLIENT_ID = "30904999528-eqlold0fc31h5c7ikgugesil10ss5afc.apps.googleusercontent.com"
