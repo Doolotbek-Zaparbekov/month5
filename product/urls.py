@@ -24,6 +24,6 @@ urlpatterns = [
     path('products/reviews/', ProductWithReviewsAPIView.as_view(), name='product-with-reviews'),
 
 
-    path('api/v1/users/', include('users.urls')),
+    path('users/', include('users.urls')),
 
 ]
