@@ -1,13 +1,13 @@
 from rest_framework import serializers
-from .models import UserConfirmation
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .utils import generate_confirmation_code, set_confirmation_code, get_confirmation_code, delete_confirmation_code
 User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
-    username = serializers.CharField(max_length=150) 
+    username = serializers.CharField(max_length=150)
     password = serializers.CharField(write_only=True)
     birthday = serializers.DateField(required=True)
 
@@ -33,12 +33,15 @@ class RegisterSerializer(serializers.ModelSerializer):
             birthday=validated_data['birthday'],
             is_active=False
         )
-        UserConfirmation.objects.create(user=user)
+        code = generate_confirmation_code()
+        set_confirmation_code(user.id, code)
+        print(f"Код для {user.username}: {code}")
+
         return user
-    
+
 
 class LoginSerializer(serializers.Serializer):
-    identifier = serializers.CharField() 
+    identifier = serializers.CharField()
     password = serializers.CharField()
 
     def validate(self, data):
@@ -53,7 +56,6 @@ class LoginSerializer(serializers.Serializer):
             user_obj = User.objects.get(email=identifier)
             user = authenticate(username=user_obj.username, password=password)
         except User.DoesNotExist:
-            
             user = authenticate(username=identifier, password=password)
 
         if user is None:
@@ -71,23 +73,26 @@ class ConfirmUserSerializer(serializers.Serializer):
     def validate(self, attrs):
         username = attrs.get("username")
         code = attrs.get("code")
+
         try:
             user = User.objects.get(username=username)
-            if not hasattr(user, 'confirmation'):
-                raise serializers.ValidationError("Подтверждение не найдено.")
-            if user.confirmation.code != code:
-                raise serializers.ValidationError("Неверный код подтверждения.")
         except User.DoesNotExist:
             raise serializers.ValidationError("Пользователь не найден.")
+
+        stored_code = get_confirmation_code(user.id)
+        if not stored_code:
+            raise serializers.ValidationError("Код истёк или не найден.")
+        if stored_code != code:
+            raise serializers.ValidationError("Неверный код подтверждения.")
+
+        attrs['user'] = user
         return attrs
 
     def save(self):
-        username = self.validated_data["username"]
-        user = User.objects.get(username=username)
+        user = self.validated_data["user"]
         user.is_active = True
         user.save()
-        user.confirmation.is_confirmed = True
-        user.confirmation.save()
+        delete_confirmation_code(user.id)
         return user
 
 
