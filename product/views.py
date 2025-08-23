@@ -7,6 +7,8 @@ from .serializers import (
 )
 from common.validators import validate_user_is_adult
 from users.permissions import IsModerator
+from django.http import JsonResponse
+from .tasks import add
 
 
 class CategoryListCreateAPIView(generics.ListCreateAPIView):
@@ -50,3 +52,6 @@ class ProductWithReviewsAPIView(generics.ListAPIView):
     queryset = Product.objects.prefetch_related('reviews').all()
     serializer_class = ProductWithReviewsSerializer
 
+def run_task(request):
+    result = add.delay(4, 6)  # отправляем задачу в Celery
+    return JsonResponse({"task_id": result.id, "status": "started"})

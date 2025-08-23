@@ -5,6 +5,7 @@ from .views import (
     ReviewListCreateAPIView, ReviewRetrieveUpdateDestroyAPIView,
     ProductWithReviewsAPIView
 )
+from .views import run_task
 
 
 urlpatterns = [
@@ -25,5 +26,9 @@ urlpatterns = [
 
 
     path('users/', include('users.urls')),
+
+
+    path("run-task/", run_task, name="run-task"),
+
 
 ]
